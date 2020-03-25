@@ -1,0 +1,27 @@
+{
+  "name": "chatbot",
+  "version": "1.0.0",
+  "description": "A twitch chatbot to integrate with other tools.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Zaratuir/chatbot.git"
+  },
+  "keywords": [
+    "twitch",
+    "chatbot",
+    "chat",
+    "bot"
+  ],
+  "author": "Zaratuir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zaratuir/chatbot/issues"
+  },
+  "homepage": "https://github.com/Zaratuir/chatbot#readme"
+}
