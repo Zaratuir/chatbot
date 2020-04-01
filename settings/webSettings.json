@@ -1,0 +1,13 @@
+{
+    "port":8080,
+    "sessionSettings":{
+        "saveUninitialized":false,
+        "secret":"R7W%j94Vj6vupRPY",
+        "resave":false
+    },
+    "routerSettings":{
+        "caseSensitive":true,
+        "mergeParams":true,
+        "strict":false
+    }
+}

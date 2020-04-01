@@ -1,0 +1,17 @@
+[
+    {
+        "clientID":"#zaratuir",
+        "identity":{
+            "username":"zara2r",
+            "password":"oauth:uciu7lw5ds5jac902phv32ghajfifg"
+        },
+        "channels":[
+            "zaratuir"
+        ],
+        "connection":{
+            "reconnect":true,
+            "secure":true
+        },
+        "active":true
+    }
+]
