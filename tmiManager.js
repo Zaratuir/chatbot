@@ -10,7 +10,7 @@ class tmiManager{
     watchers = [];
     postCommandsTimeout;
     checkWatchersTimeout;
-    pointsCycle = 10000;
+    pointsCycle = 60000;
 
     constructor(tmiClientSettings){
         if(!tmiClientSettings){
@@ -40,8 +40,9 @@ class tmiManager{
 
     postCommands(channel){
         clearTimeout(this.postCommandsTimeout);
-        this.postMessage(channel,"I'm streaming with a much better streamer named Kastia13. Check us both out at multitwitch.tv/kastia13/zaratuir");
-        this.postCommandsTimeout = setTimeout(this.postCommands,60000);
+        this.postMessage(channel,"This stream is not nearly as awesome as my costreamers: Kastia13 and StormGirl92. Come join all of us at http://www.multitwitch.tv/kastia13/stormgirl92/zaratuir")
+        this.postMessage(channel,"The commands allowed are: !commands, !echo {msg}, !dice {die type} {count}, !points, and !redeem");
+        this.postCommandsTimeout = setTimeout(this.postCommands,300000,channel);
     }
 
     checkWatchers(){
@@ -52,7 +53,7 @@ class tmiManager{
             if(now > user.nextUpdate){
                 user.points = user.points + 1;
                 user.nextUpdate = user.nextUpdate + this.pointsCycle;
-                logger.logMessage(user.userName + " has earned another point.");
+                //logger.logMessage(user.userName + " has earned another point.");
             }
         }
         this.checkWatchersTimeout = setTimeout(this.checkWatchers, 100);
@@ -96,6 +97,7 @@ class tmiManager{
 
     handleJoin(channel,username,self){
         if(self) return;
+        username = username.toLowerCase();
         logger.logMessage(username + " has connected.");
         if(!this.watchers[username]){
             let user = {
@@ -105,18 +107,18 @@ class tmiManager{
             }
             this.watchers[username] = user;
         }
-        this.postMessage(channel,username + " has entered the fight.");
+        //logger.logMessage(channel,username + " has entered the fight.");
     }
 
     handlePart(channel,username,self){
         if(self) return;
         logger.logMessage(username + " has disconnected.");
-        this.postMessage(channel,username + " couldn't handle the fight.");
+        //this.postMessage(channel,username + " couldn't handle the fight.");
     }
 
     handleMessage(channel, tags, message, self){
         if(self) return;
-        let username = tags['display-name'];
+        let username = tags['display-name'].toLowerCase();        
         if(!this.watchers[username]) {
             this.handleJoin(channel,username,self);
         }
@@ -124,6 +126,28 @@ class tmiManager{
             logger.logMessage(username + " input command: " + message);
             let words = message.split(" ");
             switch(words[0].toLowerCase()){
+                case "!givepoints":
+                    if((username === "zaratuir" || username === "kastia13" || username === "bowser_jc") && words.length > 2){
+                        let givename = words[1].toLowerCase();
+                        let points = 0;
+                        if(!this.watchers[givename]){
+                            this.postMessage(channel,givename + " is not a watcher at the moment.");
+                            return;
+                        } else {
+                            try {
+                                let points = parseInt(words[2]);
+                            } catch (e) {
+                                this.postMessage(channel,words[2] + " is not a valid number of points.");
+                                return;
+                            }
+                            this.watchers[words[1].toLowerCase()].points += parseInt(words[2]);
+                            this.postMessage(channel,username + " has given " + words[1] + " " + words[2] + " points.");
+                        }
+                    }
+                break;
+                case "!kaswantspoints":
+                    this.postMessage(channel,"Kas can't have anymore points! She's abusive with them!");
+                break;
                 case "!echo":
                     words.splice(0,1);
                     let returnMessage = words.join(" ");
@@ -182,13 +206,13 @@ class tmiManager{
                 break;
                 case "!redeem":
                     if(words.length === 1){
-                        this.postMessage(channel,"You can redeem points with the redeem command followed by one of the following: pushups(5 pts), pullups(5pts), spinach(1pt)");
+                        this.postMessage(channel,"You can redeem points with the redeem command followed by one of the following: pushups(15 pts), pullups(15pts), spinach(1pt)");
                     } else {
                         let pointCost = 0;
                         switch(words[1]){
                             case "pushups":
                             case "pullups":
-                                pointCost = 5;
+                                pointCost = 15;
                             break;
                             case "spinach":
                                 pointCost = 1;
@@ -198,7 +222,7 @@ class tmiManager{
                                 return;
                         }
                         if(this.watchers[username].points < pointCost){
-                            this.postMessage(chnnel,username + " has tried to make " + channel.replace('#','') + " do " + words[1] + ", but doesn't have enough points.");
+                            this.postMessage(channel,username + " has tried to make " + channel.replace('#','') + " do " + words[1] + ", but doesn't have enough points.");
                         } else {
                             events.emit("pointsRedeemed", {pointType: "points", cost:pointCost, action:words[1]});
                             this.watchers[username].points = this.watchers[username].points - pointCost;
