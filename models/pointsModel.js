@@ -3,7 +3,6 @@ const redeemModel = require('./redeemModel');
 let pointsmodel = (function(){
     let acquire = new Symbol();
     let redeemMap = new Symbol();
-    let userMap = new Symbol();
     class pointsModel{
         constructor(obj){
             if(obj !== undefined){
@@ -24,7 +23,11 @@ let pointsmodel = (function(){
                 } catch(e){
                     throw("Invalid constructor object.");
                 }
+            } else {
+                this[acquire] = null;
+                this[redeemMap] = new Map();
             }
+            Object.seal(this);
         }
 
         getAcquire(){
@@ -95,18 +98,6 @@ let pointsmodel = (function(){
             }
         }
 
-        getUsersPoints(user){
-            return this[userMap].get(user);
-        }
-
-        setUsersPoints(user,points){
-            if(typeof user === "string" && typeof points === "number"){
-                this[userMap].set(user,points);
-            } else {
-                throw("Method setUsersPoints expects two arguments: String user and Number points.")
-            }
-        }
-
         toJSObject(){
             let obj = {};
             obj.acquired = this[acquire];
@@ -115,16 +106,11 @@ let pointsmodel = (function(){
                 redeemObj[key] = value.toJSObject();
             }
             obj.redeem = redeemObj;
-            let userObj = {};
-            for(let [key,value] of this[userMap]){
-                userObj[key] = value;
-            }
-            obj.userPoints = userObj;
             return obj;
         }
 
         serialize(){
-            JSON.stringify(this.toJSObject());
+            return JSON.stringify(this.toJSObject());
         }
     }
 

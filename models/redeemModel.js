@@ -4,11 +4,16 @@ let redeemmodel = (() => {
     let name = new Symbol();
     class redeemModel{
         constructor(obj){
-            if(obj !== undefined){
+            if(typeof obj === "object"){
                 this[cost] = obj.cost;
                 this[message] = obj.message;
                 this[name] = obj.name;
+            } else {
+                this[cost] = null;
+                this[message] = null;
+                this[name] = null;
             }
+            Object.seal(this);
         }
 
         getName(){
