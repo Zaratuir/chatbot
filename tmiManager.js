@@ -1,8 +1,9 @@
-const tmi = require('tmi.js');
+const tmiService = require('./tmiService');
 const tmiSettings = require('./settings/tmiSettings');
+const commandService = require('./services/commandService');
 const events = require('./utils/eventsManager');
 const logger = require('./utils/logger');
-const fs = require('fs');
+const fm = require('./utils/fileManager');
 
 class tmiManager{
     tmiClientSettings = {};
@@ -12,30 +13,23 @@ class tmiManager{
     checkWatchersTimeout;
     pointsCycle = 60000;
 
-    constructor(tmiClientSettings){
-        if(!tmiClientSettings){
-            tmiClientSettings = tmiSettings;
-        }
-        try {
-            for(var setting of tmiClientSettings){
-                try{
-                    this.addTMIClient(setting);
-                    logger.logMessage("TMI Added For " + setting.clientID);
-                } catch(e) {
-                    logger.logMessage(e.message);
-                }
+    constructor(){
+        this.addTMIClient = this.addTMIClient.bind(this);
+        this.connectClient = this.connectClient.bind(this);
+        this.connectClient = this.connectClient.bind(this);
+        this.handleMessage = this.handleMessage.bind(this);
+        this.postMessage = this.postMessage.bind(this);
+        this.updateSettings = this.updateSettings.bind(this);
+        this.checkWatchers = this.checkWatchers.bind(this);
+        this.postCommands = this.postCommands.bind(this);
+        let bots = fm.getDirArray('./settings/bots').then((bots) => {
+            let bot;
+            for(bot of bots){
+                
+                this.addTMIClient(setting);
             }
-        } finally {
-            this.addTMIClient = this.addTMIClient.bind(this);
-            this.connectClient = this.connectClient.bind(this);
-            this.connectClient = this.connectClient.bind(this);
-            this.handleMessage = this.handleMessage.bind(this);
-            this.postMessage = this.postMessage.bind(this);
-            this.updateSettings = this.updateSettings.bind(this);
-            this.checkWatchers = this.checkWatchers.bind(this);
-            this.postCommands = this.postCommands.bind(this);
             this.checkWatchers();
-        }
+        }).catch((e)=> logger.logMessage(e));
     }
 
     postCommands(channel){
@@ -68,7 +62,7 @@ class tmiManager{
             }
         }
         this.tmiClientSettings[clientSettings.clientID] = clientSettings;
-        this.tmiClients[clientSettings.clientID] = new tmi.Client(clientSettings);
+        this.tmiClients[clientSettings.clientID] = new tmiService.Client(clientSettings);
         this.tmiClients[clientSettings.clientID].userList = [];
 	this.tmiClients[clientSettings.clientID].connected = false;
         if(clientSettings.active){
