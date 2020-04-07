@@ -43,6 +43,8 @@ let userpointsmodel = (() => {
             return JSON.stringify(this.toJSObject);
         }
     }
+
+    return userPointsModel;
 })();
 
 module.exports = userpointsmodel;

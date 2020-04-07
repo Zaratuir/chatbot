@@ -3,6 +3,7 @@ const redeemModel = require('./redeemModel');
 let pointsmodel = (function(){
     let acquire = new Symbol();
     let redeemMap = new Symbol();
+    let changePointsAuths = new Symbol();
     class pointsModel{
         constructor(obj){
             if(obj !== undefined){
@@ -20,12 +21,16 @@ let pointsmodel = (function(){
                             this[userMap].set(user,obj.userPoints[user]);
                         }
                     }
+                    if(obj.changePointsAuths instanceof Array){
+                        this[changePointsAuths] = obj.changePointsAuths;
+                    }
                 } catch(e){
                     throw("Invalid constructor object.");
                 }
             } else {
                 this[acquire] = null;
                 this[redeemMap] = new Map();
+                this[changePointsAuths] = [];
             }
             Object.seal(this);
         }
@@ -114,7 +119,7 @@ let pointsmodel = (function(){
         }
     }
 
-    return pointsmodel;
+    return pointsModel;
 })();
 
 module.exports = pointsmodel;
